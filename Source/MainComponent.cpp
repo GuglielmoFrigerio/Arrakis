@@ -19,6 +19,10 @@ MainComponent::MainComponent()
         // Specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
     }
+
+    addAndMakeVisible(m_label);
+    m_label.setText("Click on the left side to lower the tone or on the left side to raise the tone", juce::dontSendNotification);
+
 }
 
 MainComponent::~MainComponent()
@@ -42,6 +46,8 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     message << " samplesPerBlockExpected = " << samplesPerBlockExpected << "\n";
     message << " sampleRate = " << sampleRate;
     juce::Logger::getCurrentLogger()->writeToLog(message);
+
+    m_oscillatorPtr = std::make_unique<Oscillator>(sampleRate, 1760.0);
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -56,14 +62,7 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 
     auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
 
-    // Fill the required number of samples with noise between -0.125 and +0.125
-    for (auto sample = 0; sample < bufferToFill.numSamples; ++sample)
-        buffer[sample] = m_random.nextFloat() * 0.25f - 0.125f;
-
-    for (auto channel = 0; channel < 1; ++channel)
-    {
-        // Get a pointer to the start sample in the buffer for this audio output channel
-    }
+    m_oscillatorPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);
 }
 
 void MainComponent::releaseResources()
@@ -88,4 +87,28 @@ void MainComponent::resized()
     // This is called when the MainContentComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
+    m_currentMiddleX = getWidth() / 2;
+
+    auto area = getLocalBounds();
+    auto childArea = area.removeFromTop(50).reduced(10); // Top 50px, with 10px padding
+
+    // Set the bounds for the child component
+    m_label.setBounds(childArea);
+}
+
+bool MainComponent::keyPressed(const juce::KeyPress& key, Component* originatingComponent)
+{
+    return false;
+}
+
+void MainComponent::mouseDown(const juce::MouseEvent& event)
+{
+    
+    auto position = event.getMouseDownPosition();
+    auto x = position.getX();
+
+    auto factor = (x > m_currentMiddleX) ? 2.0 : 0.5;
+
+    auto frequency = m_oscillatorPtr->getFrequency();
+    m_oscillatorPtr->setFrequency(frequency * factor);
 }

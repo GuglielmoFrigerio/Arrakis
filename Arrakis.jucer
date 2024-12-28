@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="YUnUga" name="NewProject" projectType="guiapp" useAppConfig="0"
+<JUCERPROJECT id="YUnUga" name="Arrakis" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="latest">
-  <MAINGROUP id="va8Pij" name="NewProject">
+  <MAINGROUP id="va8Pij" name="Arrakis">
     <GROUP id="{9BB83DDC-930E-F1C7-25B3-B1C2963B0938}" name="Source">
+      <FILE id="pHxTf9" name="Oscillator.cpp" compile="1" resource="0" file="Source/Oscillator.cpp"/>
+      <FILE id="Fu8aSh" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
       <FILE id="EByaXS" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="NOVJz9" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="oua4nq" name="MainComponent.cpp" compile="1" resource="0"
