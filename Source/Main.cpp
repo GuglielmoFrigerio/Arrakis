@@ -9,6 +9,8 @@
 #include <JuceHeader.h>
 #include "MainComponent.h"
 
+using namespace arrakis;
+
 //==============================================================================
 class NewProjectApplication  : public juce::JUCEApplication
 {

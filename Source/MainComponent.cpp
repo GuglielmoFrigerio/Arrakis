@@ -1,76 +1,55 @@
 #include "MainComponent.h"
+#include "SineWaveComponent.h"
+#include "SineWave2Component.h"
+
+using namespace arrakis;
 
 //==============================================================================
 MainComponent::MainComponent()
 {
+    m_componentFactoryMap[2] = []() { return std::make_unique<SineWaveComponent>(); };
+    m_componentFactoryMap[3] = []() { return std::make_unique<SineWave2Component>(); };
+
     // Make sure you set the size of the component after
     // you add any child components.
-    setSize (800, 600);
+    setSize (1920, 1080);
 
-    // Some platforms require permissions to open input channels so request that here
-    if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
-        && ! juce::RuntimePermissions::isGranted (juce::RuntimePermissions::recordAudio))
+    m_componentSelector.addItem("No component", 1);
+    m_componentSelector.addItem("First Sine Wave", 2);
+    m_componentSelector.addItem("Second Sine Wave", 3);
+    m_componentSelector.setSelectedId(1);
+
+    addAndMakeVisible(m_componentSelector);
+
+    m_componentSelector.onChange = [this]()
     {
-        juce::RuntimePermissions::request (juce::RuntimePermissions::recordAudio,
-                                           [&] (bool granted) { setAudioChannels (granted ? 2 : 0, 2); });
+        auto selectedId = m_componentSelector.getSelectedId();
+        if (selectedId == 2) {
+            m_componentPtr = std::make_unique<SineWaveComponent>();
+            addAndMakeVisible(*m_componentPtr);
+        }
+        else if (selectedId == 3) {
+            m_componentPtr = std::make_unique<SineWave2Component>();
+            addAndMakeVisible(*m_componentPtr);
+        }
+        resized();
+    };
+
+    if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
+        && !juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
+    {
+        juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
+            [&](bool granted) { setAudioChannels(granted ? 2 : 0, 2); });
     }
     else
     {
         // Specify the number of input and output channels that we want to open
-        setAudioChannels (2, 2);
+        setAudioChannels(2, 2);
     }
-
-    addAndMakeVisible(m_label);
-    m_label.setText("Click on the left side to lower the tone or on the left side to raise the tone", juce::dontSendNotification);
-
 }
 
 MainComponent::~MainComponent()
 {
-    // This shuts down the audio device and clears the audio source.
-    shutdownAudio();
-}
-
-//==============================================================================
-void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
-{
-    // This function will be called when the audio device is started, or when
-    // its settings (i.e. sample rate, block size, etc) are changed.
-
-    // You can use this function to initialise any resources you might need,
-    // but be careful - it will be called on the audio thread, not the GUI thread.
-
-    // For more details, see the help for AudioProcessor::prepareToPlay()
-    juce::String message;
-    message << "Preparing to play audio...\n";
-    message << " samplesPerBlockExpected = " << samplesPerBlockExpected << "\n";
-    message << " sampleRate = " << sampleRate;
-    juce::Logger::getCurrentLogger()->writeToLog(message);
-
-    m_oscillatorPtr = std::make_unique<Oscillator>(sampleRate, 1760.0);
-}
-
-void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
-{
-    // Your audio-processing code goes here!
-
-    // For more details, see the help for AudioProcessor::getNextAudioBlock()
-
-    // Right now we are not producing any data, in which case we need to clear the buffer
-    // (to prevent the output of random noise)
-    bufferToFill.clearActiveBufferRegion();
-
-    auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
-
-    m_oscillatorPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);
-}
-
-void MainComponent::releaseResources()
-{
-    // This will be called when the audio device stops, or when it is being
-    // restarted due to a setting change.
-
-    // For more details, see the help for AudioProcessor::releaseResources()
 }
 
 //==============================================================================
@@ -84,31 +63,25 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
-    // This is called when the MainContentComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
-    m_currentMiddleX = getWidth() / 2;
-
     auto area = getLocalBounds();
-    auto childArea = area.removeFromTop(50).reduced(10); // Top 50px, with 10px padding
-
+    auto childArea = area.removeFromTop(80).reduced(10); // Top 50px, with 10px padding
     // Set the bounds for the child component
-    m_label.setBounds(childArea);
+    m_componentSelector.setBounds(childArea);
+
+    if (m_componentPtr != nullptr) {
+        m_componentPtr->setBounds(area);
+    }
 }
 
-bool MainComponent::keyPressed(const juce::KeyPress& key, Component* originatingComponent)
+void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
-    return false;
 }
 
-void MainComponent::mouseDown(const juce::MouseEvent& event)
+void MainComponent::releaseResources()
 {
-    
-    auto position = event.getMouseDownPosition();
-    auto x = position.getX();
-
-    auto factor = (x > m_currentMiddleX) ? 2.0 : 0.5;
-
-    auto frequency = m_oscillatorPtr->getFrequency();
-    m_oscillatorPtr->setFrequency(frequency * factor);
 }
+
+void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
+{
+}
+
