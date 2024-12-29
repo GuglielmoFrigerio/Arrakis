@@ -17,20 +17,23 @@ namespace arrakis {
     private:
         double m_sampleFrequency;
         double m_signalFrequency;
-        int m_position;
+        double m_position = 0.0;
         std::atomic<double> m_deltaPerSample;
+        int m_counter = 0;
+        double m_doublePi;
 
     private:
         double computeDelta() {
-            return (std::numbers::pi * 2.0 * m_signalFrequency) / m_sampleFrequency;
+            return (m_doublePi * m_signalFrequency) / m_sampleFrequency;
         }
 
     public:
-        Oscillator(double sampleFrequency, double signalFrequency) : 
+        Oscillator(double sampleFrequency, double signalFrequency) :
             m_sampleFrequency(sampleFrequency),
             m_signalFrequency(signalFrequency),
-            m_position(0)
+            m_doublePi(std::numbers::pi * 2.0)
         {
+
             m_deltaPerSample.store(computeDelta());
         }
 

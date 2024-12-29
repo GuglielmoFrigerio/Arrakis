@@ -40,7 +40,7 @@ set(SourceFiles
     Source/SineWave2Component.cpp
     Source/SineWave2Component.h
     Source/JuceHeader.h
-)
+ "Source/AudioRecorderComponent.h" "Source/AudioRecorderComponent.cpp")
 
 # Define the target
 juce_add_gui_app(Arrakis

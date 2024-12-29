@@ -1,6 +1,7 @@
 #include "MainComponent.h"
 #include "SineWaveComponent.h"
 #include "SineWave2Component.h"
+#include "AudioRecorderComponent.h"
 
 using namespace arrakis;
 
@@ -9,6 +10,7 @@ MainComponent::MainComponent()
 {
     m_componentFactoryMap[2] = []() { return std::make_shared<SineWaveComponent>(); };
     m_componentFactoryMap[3] = []() { return std::make_shared<SineWave2Component>(); };
+    m_componentFactoryMap[4] = []() { return std::make_shared<AudioRecorderComponent>(); };
 
     // Make sure you set the size of the component after
     // you add any child components.
@@ -17,6 +19,7 @@ MainComponent::MainComponent()
     m_componentSelector.addItem("No component", 1);
     m_componentSelector.addItem("First Sine Wave", 2);
     m_componentSelector.addItem("Second Sine Wave", 3);
+    m_componentSelector.addItem("AudioRecorder", 4);
     m_componentSelector.setSelectedId(1);
 
     addAndMakeVisible(m_componentSelector);
@@ -39,6 +42,11 @@ MainComponent::MainComponent()
         resized();
     };
 
+    listAudioDevices();
+
+    //m_audioSelector = std::make_unique<juce::AudioDeviceSelectorComponent>(m_audioDeviceManager, 0, 2, 0, 2, true, true, true, false);
+    //addAndMakeVisible(*m_audioSelector);
+
     if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
         && !juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
     {
@@ -48,7 +56,7 @@ MainComponent::MainComponent()
     else
     {
         // Specify the number of input and output channels that we want to open
-        setAudioChannels(2, 2);
+        setAudioChannels(0, 2);
     }
 }
 
@@ -68,6 +76,9 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
+    if (m_audioSelector != nullptr)
+        m_audioSelector->setBounds(getLocalBounds());
+
     auto area = getLocalBounds();
     auto childArea = area.removeFromTop(80).reduced(10); // Top 50px, with 10px padding
     // Set the bounds for the child component
@@ -94,6 +105,32 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
     auto componentPtr = m_componentPtr.load();
     if (componentPtr != nullptr) {
         componentPtr->getNextAudioBlock(bufferToFill);
+    }
+}
+
+void MainComponent::listAudioDevices()
+{
+    juce::AudioDeviceManager audioDeviceManager;
+
+    // Find available device types
+    juce::OwnedArray<juce::AudioIODeviceType> deviceTypes;
+    audioDeviceManager.createAudioDeviceTypes(deviceTypes);
+
+    for (auto* deviceType : deviceTypes)
+    {
+        deviceType->scanForDevices();
+
+        // List available output devices
+        juce::StringArray outputDevices = deviceType->getDeviceNames(false); // false = output devices
+        DBG("Available output devices:");
+        for (const auto& device : outputDevices)
+            DBG("  " << device);
+
+        // List available input devices
+        juce::StringArray inputDevices = deviceType->getDeviceNames(true); // true = input devices
+        DBG("Available input devices:");
+        for (const auto& device : inputDevices)
+            DBG("  " << device);
     }
 }
 

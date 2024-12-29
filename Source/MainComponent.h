@@ -33,12 +33,16 @@ private:    // implementation
 
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
 
+    void listAudioDevices();
+
 private:
     juce::ComboBox m_componentSelector;
     std::atomic<std::shared_ptr<AudioComponentBase>> m_componentPtr;
     std::unordered_map<int, ComponentFactory> m_componentFactoryMap;
     int m_samplesPerBlockExpected = 0;
     double m_sampleRate = 0.0;
+    juce::AudioDeviceManager m_audioDeviceManager;
+    std::unique_ptr<juce::AudioDeviceSelectorComponent> m_audioSelector;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

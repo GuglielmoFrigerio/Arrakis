@@ -12,11 +12,11 @@
 using namespace arrakis;
 
 //==============================================================================
-class NewProjectApplication  : public juce::JUCEApplication
+class ArrakisApplication  : public juce::JUCEApplication
 {
 public:
     //==============================================================================
-    NewProjectApplication() {}
+    ArrakisApplication() {}
 
     const juce::String getApplicationName() override       { return ProjectInfo::projectName; }
     const juce::String getApplicationVersion() override    { return ProjectInfo::versionString; }
@@ -104,4 +104,4 @@ private:
 
 //==============================================================================
 // This macro generates the main() routine that launches the app.
-START_JUCE_APPLICATION (NewProjectApplication)
+START_JUCE_APPLICATION (ArrakisApplication)
