@@ -34,32 +34,15 @@ namespace arrakis
             m_oscillatorPtr->setFrequency(frequency);
         };        
         addAndMakeVisible(m_slider);
-
-        if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
-            && !juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
-        {
-            juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
-                [&](bool granted) { setAudioChannels(granted ? 2 : 0, 2); });
-        }
-        else
-        {
-            // Specify the number of input and output channels that we want to open
-            setAudioChannels(2, 2);
-        }
     }
 
     SineWave2Component::~SineWave2Component()
     {
-        shutdownAudio();
     }
 
     void SineWave2Component::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
     {
         m_oscillatorPtr = std::make_unique<Oscillator>(sampleRate, m_initialFrequency);
-    }
-
-    void SineWave2Component::releaseResources()
-    {
     }
 
     void SineWave2Component::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)

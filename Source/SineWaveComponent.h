@@ -24,7 +24,6 @@ namespace arrakis {
         //==============================================================================
         void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
         void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
-        void releaseResources() override;
 
         //==============================================================================
         void paint(juce::Graphics& g) override;

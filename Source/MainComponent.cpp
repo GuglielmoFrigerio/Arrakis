@@ -7,8 +7,8 @@ using namespace arrakis;
 //==============================================================================
 MainComponent::MainComponent()
 {
-    m_componentFactoryMap[2] = []() { return std::make_unique<SineWaveComponent>(); };
-    m_componentFactoryMap[3] = []() { return std::make_unique<SineWave2Component>(); };
+    m_componentFactoryMap[2] = []() { return std::make_shared<SineWaveComponent>(); };
+    m_componentFactoryMap[3] = []() { return std::make_shared<SineWave2Component>(); };
 
     // Make sure you set the size of the component after
     // you add any child components.
@@ -24,14 +24,18 @@ MainComponent::MainComponent()
     m_componentSelector.onChange = [this]()
     {
         auto selectedId = m_componentSelector.getSelectedId();
-        if (selectedId == 2) {
-            m_componentPtr = std::make_unique<SineWaveComponent>();
-            addAndMakeVisible(*m_componentPtr);
+        auto componentPtr = m_componentPtr.load();
+        if (componentPtr != nullptr)
+            m_componentPtr = nullptr;
+
+        auto it = m_componentFactoryMap.find(selectedId);
+        if (it != m_componentFactoryMap.end()) {
+            auto componentPtr = it->second();
+            componentPtr->prepareToPlay(m_samplesPerBlockExpected, m_sampleRate);
+            addAndMakeVisible(*componentPtr);
+            m_componentPtr.store(componentPtr);
         }
-        else if (selectedId == 3) {
-            m_componentPtr = std::make_unique<SineWave2Component>();
-            addAndMakeVisible(*m_componentPtr);
-        }
+
         resized();
     };
 
@@ -50,6 +54,7 @@ MainComponent::MainComponent()
 
 MainComponent::~MainComponent()
 {
+    shutdownAudio();
 }
 
 //==============================================================================
@@ -68,13 +73,16 @@ void MainComponent::resized()
     // Set the bounds for the child component
     m_componentSelector.setBounds(childArea);
 
-    if (m_componentPtr != nullptr) {
-        m_componentPtr->setBounds(area);
+    auto componentPtr = m_componentPtr.load();
+    if (componentPtr != nullptr) {
+        componentPtr->setBounds(area);
     }
 }
 
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
+    m_samplesPerBlockExpected = samplesPerBlockExpected;
+    m_sampleRate = sampleRate;
 }
 
 void MainComponent::releaseResources()
@@ -83,5 +91,9 @@ void MainComponent::releaseResources()
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
+    auto componentPtr = m_componentPtr.load();
+    if (componentPtr != nullptr) {
+        componentPtr->getNextAudioBlock(bufferToFill);
+    }
 }
 

@@ -32,8 +32,6 @@ namespace arrakis
 
         void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
 
-        void releaseResources() override;
-
         void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
 
         void paint(juce::Graphics& g) override;

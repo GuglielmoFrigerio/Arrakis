@@ -17,11 +17,13 @@ namespace arrakis
     //==============================================================================
     /*
     */
-    class AudioComponentBase : public juce::AudioAppComponent
+    class AudioComponentBase : public juce::Component
     {
     public:
         AudioComponentBase();
 
+        virtual void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
+        virtual void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) = 0;
         void paint(juce::Graphics&) override;
         void resized() override;
 

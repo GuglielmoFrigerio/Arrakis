@@ -1,12 +1,14 @@
 #pragma once
 #include <memory>
 #include <functional>
+#include <atomic>
 #include "JuceHeader.h"
 #include "Oscillator.h"
+#include "AudioComponentBase.h"
 
 using namespace arrakis;
 
-using ComponentFactory = std::function<std::unique_ptr<juce::Component>()>;
+using ComponentFactory = std::function<std::shared_ptr<AudioComponentBase>()>;
 
 //==============================================================================
 /*
@@ -33,9 +35,10 @@ private:    // implementation
 
 private:
     juce::ComboBox m_componentSelector;
-    std::unique_ptr<Component> m_componentPtr;
+    std::atomic<std::shared_ptr<AudioComponentBase>> m_componentPtr;
     std::unordered_map<int, ComponentFactory> m_componentFactoryMap;
-
+    int m_samplesPerBlockExpected = 0;
+    double m_sampleRate = 0.0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

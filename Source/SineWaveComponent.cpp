@@ -17,23 +17,10 @@ namespace arrakis {
 
         addAndMakeVisible(m_label);
         m_label.setText("Click on the left side to lower the tone or on the left side to raise the tone", juce::dontSendNotification);
-
-        if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
-            && !juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
-        {
-            juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
-                [&](bool granted) { setAudioChannels(granted ? 2 : 0, 2); });
-        }
-        else
-        {
-            // Specify the number of input and output channels that we want to open
-            setAudioChannels(2, 2);
-        }
     }
 
     SineWaveComponent::~SineWaveComponent()
     {
-        shutdownAudio();
     }
 
     void SineWaveComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -67,14 +54,6 @@ namespace arrakis {
         auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
 
         m_oscillatorPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);
-    }
-
-    void SineWaveComponent::releaseResources()
-    {
-        // This will be called when the audio device stops, or when it is being
-        // restarted due to a setting change.
-
-        // For more details, see the help for AudioProcessor::releaseResources()
     }
 
     void SineWaveComponent::paint(juce::Graphics& g)

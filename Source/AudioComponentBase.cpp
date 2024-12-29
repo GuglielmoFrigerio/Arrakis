@@ -18,6 +18,10 @@ namespace arrakis {
     {
     }
 
+    void AudioComponentBase::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
+    {
+    }
+
     void AudioComponentBase::paint(juce::Graphics& g)
     {
         g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
@@ -33,9 +37,5 @@ namespace arrakis {
 
     void AudioComponentBase::resized()
     {
-        // This method is where you should set the bounds of any child
-        // components that your component contains..
-
     }
-
 }
