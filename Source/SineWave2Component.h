@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include <JuceHeader.h>
+#include "JuceHeader.h"
 #include "AudioComponentBase.h"
 #include "Oscillator.h"
 

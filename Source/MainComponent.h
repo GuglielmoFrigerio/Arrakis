@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <functional>
-#include <JuceHeader.h>
+#include "JuceHeader.h"
 #include "Oscillator.h"
 
 using namespace arrakis;
