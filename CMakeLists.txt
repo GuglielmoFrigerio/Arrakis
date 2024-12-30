@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.24)
 project(Arrakis VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_XCODE_GENERATE_SCHEME OFF)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -40,12 +41,15 @@ set(SourceFiles
     Source/SineWave2Component.cpp
     Source/SineWave2Component.h
     Source/JuceHeader.h
- "Source/AudioRecorderComponent.h" "Source/AudioRecorderComponent.cpp")
+ "Source/AudioRecorderComponent.h" "Source/AudioRecorderComponent.cpp" "Source/VolumeControlComponent.h" "Source/VolumeControlComponent.cpp" "Source/DecibelSlider.h")
 
 # Define the target
 juce_add_gui_app(Arrakis
     PRODUCT_NAME "Arrakis" # Replace with your product name
 )
+
+#Source/JuceHeader.h
+#target_precompile_headers(${PROJECT_NAME} PRIVATE Source/JuceHeader.h)
 
 # How we want our SourceFiles to appear in our IDE
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SourceFiles})

@@ -1,7 +1,9 @@
+#include "JuceHeader.h"
 #include "MainComponent.h"
 #include "SineWaveComponent.h"
 #include "SineWave2Component.h"
 #include "AudioRecorderComponent.h"
+#include "VolumeControlComponent.h"
 
 using namespace arrakis;
 
@@ -11,6 +13,7 @@ MainComponent::MainComponent()
     m_componentFactoryMap[2] = []() { return std::make_shared<SineWaveComponent>(); };
     m_componentFactoryMap[3] = []() { return std::make_shared<SineWave2Component>(); };
     m_componentFactoryMap[4] = []() { return std::make_shared<AudioRecorderComponent>(); };
+    m_componentFactoryMap[5] = []() { return std::make_shared<VolumeControlComponent>(); };
 
     // Make sure you set the size of the component after
     // you add any child components.
@@ -20,6 +23,7 @@ MainComponent::MainComponent()
     m_componentSelector.addItem("First Sine Wave", 2);
     m_componentSelector.addItem("Second Sine Wave", 3);
     m_componentSelector.addItem("AudioRecorder", 4);
+    m_componentSelector.addItem("Volume Control", 5);
     m_componentSelector.setSelectedId(1);
 
     addAndMakeVisible(m_componentSelector);
@@ -102,6 +106,8 @@ void MainComponent::releaseResources()
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
+    bufferToFill.clearActiveBufferRegion();
+
     auto componentPtr = m_componentPtr.load();
     if (componentPtr != nullptr) {
         componentPtr->getNextAudioBlock(bufferToFill);

@@ -9,8 +9,6 @@
 */
 
 #pragma once
-#include <numbers>
-#include <atomic>
 
 namespace arrakis {
     class Oscillator {
@@ -19,6 +17,7 @@ namespace arrakis {
         double m_signalFrequency;
         double m_position = 0.0;
         std::atomic<double> m_deltaPerSample;
+        std::atomic<double> m_volume;
         int m_counter = 0;
         double m_doublePi;
 
@@ -31,7 +30,8 @@ namespace arrakis {
         Oscillator(double sampleFrequency, double signalFrequency) :
             m_sampleFrequency(sampleFrequency),
             m_signalFrequency(signalFrequency),
-            m_doublePi(std::numbers::pi * 2.0)
+            m_doublePi(std::numbers::pi * 2.0),
+            m_volume(1.0)
         {
 
             m_deltaPerSample.store(computeDelta());
@@ -43,6 +43,10 @@ namespace arrakis {
 
         double getFrequency() const {
             return m_signalFrequency;
+        }
+
+        void setVolume(double volume) {
+            m_volume.store(volume);
         }
     };
 }

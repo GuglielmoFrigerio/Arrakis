@@ -1,8 +1,4 @@
 #pragma once
-#include <memory>
-#include <functional>
-#include <atomic>
-#include "JuceHeader.h"
 #include "Oscillator.h"
 #include "AudioComponentBase.h"
 

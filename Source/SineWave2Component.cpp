@@ -7,7 +7,7 @@
 
   ==============================================================================
 */
-
+#include "JuceHeader.h"
 #include "SineWave2Component.h"
 
 namespace arrakis
@@ -47,8 +47,6 @@ namespace arrakis
 
     void SineWave2Component::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
     {
-        bufferToFill.clearActiveBufferRegion();
-
         auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
 
         m_oscillatorPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);

@@ -7,7 +7,7 @@
 
   ==============================================================================
 */
-#include <cmath>
+#include "JuceHeader.h"
 #include "Oscillator.h"
 
 namespace arrakis {
@@ -17,14 +17,10 @@ namespace arrakis {
         auto deltaPerSample = m_deltaPerSample.load();
         auto endPosition = offset + length;
         while (offset < endPosition) {
-            pWriteBuffer[offset] += (float)std::sin(m_position);
+            pWriteBuffer[offset] += (float)std::sin(m_position) * m_volume.load();
             m_position = std::remainder(m_position + deltaPerSample, m_doublePi);
             offset++;
         }
-        //if (++m_counter % 100 == 0) {
-        //    m_sampleFrequency--;
-        //    m_deltaPerSample = computeDelta();
-        //}
     }
 
     void Oscillator::setFrequency(double frequency)

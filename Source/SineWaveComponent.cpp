@@ -7,7 +7,7 @@
 
   ==============================================================================
 */
-
+#include "JuceHeader.h"
 #include "SineWaveComponent.h"
 
 namespace arrakis {
@@ -43,14 +43,6 @@ namespace arrakis {
 
     void SineWaveComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
     {
-        // Your audio-processing code goes here!
-
-        // For more details, see the help for AudioProcessor::getNextAudioBlock()
-
-        // Right now we are not producing any data, in which case we need to clear the buffer
-        // (to prevent the output of random noise)
-        bufferToFill.clearActiveBufferRegion();
-
         auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
 
         m_oscillatorPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);
