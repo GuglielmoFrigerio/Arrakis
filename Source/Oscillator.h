@@ -20,6 +20,9 @@ namespace arrakis {
         std::atomic<double> m_volume;
         int m_counter = 0;
         double m_doublePi;
+        double m_leftGain = 1.0;
+        double m_rightGain = 1.0;
+        int m_pan; // -100 to +100
 
     private:
         double computeDelta() {
@@ -37,7 +40,7 @@ namespace arrakis {
             m_deltaPerSample.store(computeDelta());
         }
 
-        void getNextAudioBlock(float* pWriteBuffer, int offset, int length);
+        void getNextAudioBlock(float* pLeftWriteBuffer, float* pWriteWriteBuffer, int offset, int length);
 
         void setFrequency(double frequency);
 
@@ -48,5 +51,7 @@ namespace arrakis {
         void setVolume(double volume) {
             m_volume.store(volume);
         }
+
+        void setPan(int pan);
     };
 }

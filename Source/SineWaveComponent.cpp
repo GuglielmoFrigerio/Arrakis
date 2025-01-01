@@ -43,9 +43,10 @@ namespace arrakis {
 
     void SineWaveComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
     {
-        auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
+        auto* pLeftBuffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
+        auto* pRightBuffer = bufferToFill.buffer->getWritePointer(1, bufferToFill.startSample);
 
-        m_oscillatorPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);
+        m_oscillatorPtr->getNextAudioBlock(pLeftBuffer, pRightBuffer, bufferToFill.startSample, bufferToFill.numSamples);
     }
 
     void SineWaveComponent::paint(juce::Graphics& g)

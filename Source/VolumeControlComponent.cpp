@@ -3,11 +3,11 @@
 
 namespace arrakis {
 
-	void VolumeControlComponent::setupSlider(juce::Slider& slider)
+	void VolumeControlComponent::setupSlider(juce::Slider& slider, double minimum, double maximum, double interval)
 	{
 		slider.setSliderStyle(juce::Slider::LinearHorizontal); // Horizontal style
 		slider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 100, 20); // Textbox below the slider
-		slider.setRange(0, 1, 0.001); // Set the range (min, max, step size)
+		slider.setRange(minimum, maximum, interval); // Set the range (min, max, step size)
 		slider.setValue(1.0); // Default value
 		slider.setColour(juce::Slider::thumbColourId, juce::Colours::blue); // Customize thumb color
 	}
@@ -33,13 +33,18 @@ namespace arrakis {
 
 		auto logArea = area.removeFromBottom(50).reduced(10);
 		m_decibelSlider.setBounds(logArea);
+
+		auto panArea = area.removeFromBottom(50).reduced(10);
+		m_panSlider.setBounds(panArea);
 	}
 
 	void VolumeControlComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 	{
-		auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
-		m_lowerOscPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);
-		m_upperOscPtr->getNextAudioBlock(buffer, bufferToFill.startSample, bufferToFill.numSamples);
+		auto* pLeftBuffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
+		auto* pRightBuffer = bufferToFill.buffer->getWritePointer(1, bufferToFill.startSample);
+
+		m_lowerOscPtr->getNextAudioBlock(pLeftBuffer, pRightBuffer, bufferToFill.startSample, bufferToFill.numSamples);
+		m_upperOscPtr->getNextAudioBlock(pLeftBuffer, pRightBuffer, bufferToFill.startSample, bufferToFill.numSamples);
 	}
 
 	void VolumeControlComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -50,14 +55,21 @@ namespace arrakis {
 
 	VolumeControlComponent::VolumeControlComponent()
 	{
-		setupSlider(m_linearSlider);
+		setupSlider(m_linearSlider, 0.0, 1.0, 0.001);
+		setupSlider(m_panSlider, -100, 100, 1);
 		setupDecibelSlider(m_decibelSlider);
 		addAndMakeVisible(m_linearSlider);
 		addAndMakeVisible(m_decibelSlider);
+		addAndMakeVisible(m_panSlider);
 
 		m_linearSlider.onValueChange = [this]() {
 			auto value = m_linearSlider.getValue();
 			m_lowerOscPtr->setVolume(value);
+		};
+
+		m_panSlider.onValueChange = [this]() {
+			auto value = m_panSlider.getValue();
+			m_upperOscPtr->setPan((int)value);
 		};
 	}
 }

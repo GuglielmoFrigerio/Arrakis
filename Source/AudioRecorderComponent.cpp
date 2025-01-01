@@ -101,7 +101,7 @@ namespace arrakis {
 					for (int k = 0; k < samplesPerTick; k++) {
 						sampleBuffer[k] = 0;
 					}
-					m_oscillatorPtr->getNextAudioBlock(sampleBuffer, 0, samplesPerTick);
+					m_oscillatorPtr->getNextAudioBlock(sampleBuffer, sampleBuffer, 0, samplesPerTick);
 					m_audioBufferPtr->copyFrom(0, offset, sampleBuffer, samplesPerTick);
 					offset += samplesPerTick;
 					//for (int k = 0; k < samplesPerTick; k++) {

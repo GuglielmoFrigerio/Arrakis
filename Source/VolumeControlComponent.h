@@ -11,10 +11,11 @@ namespace arrakis {
 		std::unique_ptr<Oscillator> m_upperOscPtr;
 		juce::Slider m_linearSlider;
 		DecibelSlider m_decibelSlider;
+		juce::Slider m_panSlider;
 
 	private:	// implementation
 
-		void setupSlider(juce::Slider& slider);
+		void setupSlider(juce::Slider& slider, double minimum, double maximum, double interval);
 		void setupDecibelSlider(DecibelSlider& decibelSlider);
 		void resized() override;
 
